@@ -30,6 +30,11 @@ CREATE TABLE empleado (
     FOREIGN KEY (id_comuna) REFERENCES comuna(id_comuna)
 );
 
+CREATE TABLE vendedor (
+	id_vendedor INT PRIMARY KEY,
+	nombre VARCHAR(100) NOT NULL
+);
+
 CREATE TABLE tienda (
     id_tienda INT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL
@@ -44,7 +49,7 @@ CREATE TABLE venta (
     mes VARCHAR(20) NOT NULL,
     dia INT NOT NULL,
     FOREIGN KEY (id_tienda) REFERENCES tienda(id_tienda),
-    FOREIGN KEY (id_vendedor) REFERENCES empleado(id_empleado),
+    FOREIGN KEY (id_vendedor) REFERENCES vendedor(id_vendedor),
     FOREIGN KEY (id_tipodoc) REFERENCES tipodoc(id_tipodoc)
 );
 

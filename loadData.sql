@@ -1,4 +1,3 @@
-
 INSERT INTO sueldo (id_sueldo, valor, mes) VALUES
 (1, 800, 'Enero'),
 (2, 850, 'Febrero'),
@@ -36,16 +35,28 @@ INSERT INTO tipodoc (id_tipodoc, nombre) VALUES
 (10, 'Vale');
 
 INSERT INTO empleado (id_empleado, id_sueldo, id_comuna, cargo, nombre) VALUES
-(1, 1, 1, 'Vendedor', 'Juan Pérez'),
+(1, 1, 1, 'Supervisor', 'Juan Pérez'),
 (2, 2, 2, 'Cajero', 'María López'),
 (3, 3, 3, 'Gerente', 'Pedro Gómez'),
 (4, 4, 4, 'Supervisor', 'Ana Torres'),
-(5, 5, 5, 'Vendedor', 'Luis Díaz'),
+(5, 5, 5, 'Cajero', 'Luis Díaz'),
 (6, 6, 6, 'Cajero', 'Laura Silva'),
 (7, 7, 7, 'Gerente', 'Jorge Ramírez'),
 (8, 8, 8, 'Supervisor', 'Sofía Herrera'),
-(9, 9, 9, 'Vendedor', 'Diego Castro'),
+(9, 9, 9, 'Gerente', 'Diego Castro'),
 (10, 10, 10, 'Cajero', 'Carla Morales');
+
+INSERT INTO vendedor (id_vendedor, nombre) VALUES
+(1, 'Ricardo Fuentes'),
+(2, 'Valentina Rojas'),
+(3, 'Fernando Aguilar'),
+(4, 'Isabel Contreras'),
+(5, 'Matías Pereira'),
+(6, 'Camila Varela'),
+(7, 'Sebastián León'),
+(8, 'Natalia Paredes'),
+(9, 'Gonzalo Méndez'),
+(10, 'Paula Estrada');
 
 INSERT INTO tienda (id_tienda, nombre) VALUES
 (1, 'Tienda Centro'),
@@ -95,9 +106,6 @@ INSERT INTO producto_venta (id_producto, id_venta) VALUES
 (9, 8),
 (10, 9);
 
--- ========================
--- Tabla: tienda_empleado
--- ========================
 INSERT INTO tienda_empleado (id_tienda, id_empleado) VALUES
 (1, 1),
 (2, 2),
