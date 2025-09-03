@@ -1,1 +1,0 @@
-# TallerBasedeDatosGrupo1
