@@ -1,9 +1,9 @@
 -- Crear base de datos (ejecutar en postgres)
-DROP DATABASE IF EXISTS tienda_comercial;
-CREATE DATABASE tienda_comercial;
+--DROP DATABASE IF EXISTS tienda_comercial;
+--CREATE DATABASE tienda_comercial;
 
 -- Conectarse a la base
-\c tienda_comercial;
+--\c tienda_comercial;
 
 -- ===========================
 -- CREACIÓN DE TABLAS
@@ -14,7 +14,6 @@ CREATE TABLE producto (
     nombre VARCHAR(100) NOT NULL,
     precio INT DEFAULT 0
 );
-
 
 CREATE TABLE comuna (
     id_comuna INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -42,12 +41,6 @@ CREATE TABLE sueldo (
     FOREIGN KEY (id_empleado) REFERENCES empleado(id_empleado)
 );
 
-CREATE TABLE vendedor (
-	id_vendedor INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_empleado INT,
-    FOREIGN KEY (id_empleado) REFERENCES empleado(id_empleado)
-);
-
 CREATE TABLE tienda (
     id_tienda INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_comuna INT,
@@ -59,21 +52,22 @@ CREATE TABLE venta (
     id_venta INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_tienda INT,
     id_tipodoc INT,
+	id_empleado INT,
     anio INT,
     mes VARCHAR(100),
     FOREIGN KEY (id_tienda) REFERENCES tienda(id_tienda),
-    FOREIGN KEY (id_tipodoc) REFERENCES tipodoc(id_tipodoc)
+    FOREIGN KEY (id_tipodoc) REFERENCES tipodoc(id_tipodoc),
+	FOREIGN KEY (id_empleado) REFERENCES empleado(id_empleado)
 );
 
 CREATE TABLE producto_venta (
     id_producto INT,
     id_venta INT,
-    id_vendedor INT,
-    PRIMARY KEY (id_producto, id_venta, id_vendedor),
+    PRIMARY KEY (id_producto, id_venta),
     FOREIGN KEY (id_producto) REFERENCES producto(id_producto),
-    FOREIGN KEY (id_venta) REFERENCES venta(id_venta),
-    FOREIGN KEY (id_vendedor) REFERENCES vendedor(id_vendedor)
+    FOREIGN KEY (id_venta) REFERENCES venta(id_venta)
 );
+
 CREATE TABLE tienda_empleado (
     id_tienda INT,
     id_empleado INT,
@@ -81,4 +75,3 @@ CREATE TABLE tienda_empleado (
     FOREIGN KEY (id_tienda) REFERENCES tienda(id_tienda),
     FOREIGN KEY (id_empleado) REFERENCES empleado(id_empleado)
 );
-
