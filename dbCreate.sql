@@ -12,7 +12,7 @@ CREATE DATABASE tienda_comercial;
 CREATE TABLE producto (
     id_producto INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    precio NUMERIC(10,2) DEFAULT 0
+    precio INT DEFAULT 0
 );
 
 
@@ -37,7 +37,7 @@ CREATE TABLE empleado (
 CREATE TABLE sueldo (
     id_sueldo INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_empleado INT,
-    valor NUMERIC(10,2) DEFAULT 0,
+    valor INT DEFAULT 0,
     mes VARCHAR(20) NOT NULL,
     FOREIGN KEY (id_empleado) REFERENCES empleado(id_empleado)
 );
