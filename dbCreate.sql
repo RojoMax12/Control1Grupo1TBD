@@ -25,20 +25,20 @@ CREATE TABLE tipodoc (
     nombre VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE empleado (
-    id_empleado INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_comuna INT,
-    cargo VARCHAR(50) NOT NULL,
-    nombre VARCHAR(100) NOT NULL,
-    FOREIGN KEY (id_comuna) REFERENCES comuna(id_comuna)
-);
-
 CREATE TABLE sueldo (
     id_sueldo INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_empleado INT,
     valor INT DEFAULT 0,
     mes VARCHAR(20) NOT NULL,
     FOREIGN KEY (id_empleado) REFERENCES empleado(id_empleado)
+);
+
+CREATE TABLE empleado (
+    id_empleado INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_comuna INT,
+    cargo VARCHAR(50) NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    FOREIGN KEY (id_comuna) REFERENCES comuna(id_comuna)
 );
 
 CREATE TABLE tienda (
