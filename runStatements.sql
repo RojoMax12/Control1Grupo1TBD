@@ -26,3 +26,28 @@ ORDER BY array_position(
 	mes
 );
 
+
+-- Query 2, Producto mas economico por tienda.
+SELECT DISTINCT ON (t.id_tienda) 
+       t.nombre AS tienda,
+       p.nombre AS producto,
+       p.precio
+FROM tienda t
+INNER JOIN venta v ON v.id_tienda = t.id_tienda
+INNER JOIN producto_venta pv ON pv.id_venta = v.id_venta
+INNER JOIN producto p ON p.id_producto = pv.id_producto
+ORDER BY t.id_tienda, p.precio ASC;
+
+-- Query 7, El vendedor que ha recaudado más dinero para la tienda por año.
+SELECT DISTINCT ON (t.id_tienda, v.anio)
+		t.nombre AS tienda,
+		v.anio,
+		em.nombre AS vendedor,
+		SUM(p.precio) AS total_ventas
+FROM tienda t 
+INNER JOIN venta v ON v.id_tienda = t.id_tienda
+INNER JOIN producto_venta pv ON pv.id_venta = v.id_venta
+INNER JOIN producto p ON p.id_producto = pv.id_producto
+INNER JOIN empleado em ON em.id_empleado = v.id_empleado
+GROUP BY t.id_tienda, t.nombre, v.anio, em.id_empleado, em.nombre
+ORDER BY t.id_tienda, v.anio, SUM(p.precio) DESC, em.nombre;
