@@ -1,5 +1,4 @@
---Query 1 Producto más vendido por mes el 2021.
-
+--Query 1; Producto más vendido por mes el 2021.
 WITH ventas_por_producto AS ( /*tabla temporal ventas_por_producto */
 	SELECT v.mes, 
 		p.nombre AS producto,
@@ -26,8 +25,7 @@ ORDER BY array_position(
 	mes
 );
 
-
--- Query 2, Producto mas economico por tienda.
+-- Query 2; Producto mas economico por tienda.
 SELECT DISTINCT ON (t.id_tienda) 
        t.nombre AS tienda,
        p.nombre AS producto,
@@ -38,8 +36,33 @@ INNER JOIN producto_venta pv ON pv.id_venta = v.id_venta
 INNER JOIN producto p ON p.id_producto = pv.id_producto
 ORDER BY t.id_tienda, p.precio ASC;
 
---Query 4, Empleado que ganó más por tienda en 2020, indicando la comuna donde vive y el cargo que tiene en la empresa.
+--Query 3; Ventas por mes, separadas entre Boletas y Facturas.
+SELECT 
+    v.anio,
+    v.mes,
+    td.nombre AS tipo_documento,
+    COUNT(v.id_venta) AS total_ventas
+FROM venta v
+JOIN tipodoc td ON v.id_tipodoc = td.id_tipodoc
+GROUP BY v.anio, v.mes, td.nombre
+ORDER BY 
+    v.anio DESC,
+    CASE v.mes
+        WHEN 'Enero' THEN 1
+        WHEN 'Febrero' THEN 2
+        WHEN 'Marzo' THEN 3
+        WHEN 'Abril' THEN 4
+        WHEN 'Mayo' THEN 5
+        WHEN 'Junio' THEN 6
+        WHEN 'Julio' THEN 7
+        WHEN 'Agosto' THEN 8
+        WHEN 'Septiembre' THEN 9
+        WHEN 'Octubre' THEN 10
+        WHEN 'Noviembre' THEN 11
+        WHEN 'Diciembre' THEN 12
+    END DESC;
 
+--Query 4; Empleado que ganó más por tienda en 2020, indicando la comuna donde vive y el cargo que tiene en la empresa.
 SELECT 
     e.id_empleado,
     e.nombre AS empleado,
@@ -60,7 +83,7 @@ GROUP BY e.id_empleado, e.nombre, e.cargo, c.nombre, v.anio
 ORDER BY total_ventas DESC, recaudacion DESC
 LIMIT 1;
 
---Query 5, La tienda que tiene menos empleados.
+--Query 5; La tienda que tiene menos empleados.
 SELECT nombre, cant_empleados
 FROM (
 	SELECT TE.id_tienda, T.nombre,
@@ -73,7 +96,7 @@ FROM (
 WHERE rnk = 1;
 
 
--- Query 6: Obtener el vendedor con más ventas por mes
+-- Query 6; Obtener el vendedor con más ventas por mes
 
 WITH ranking AS ( /*crea columna rn con el ranking de vendedores por mes y año*/
     SELECT 
@@ -101,7 +124,7 @@ ORDER BY anio,
 	);
 
 
--- Query 7, El vendedor que ha recaudado más dinero para la tienda por año.
+-- Query 7; El vendedor que ha recaudado más dinero para la tienda por año.
 SELECT DISTINCT ON (t.id_tienda, v.anio)
 		t.nombre AS tienda,
 		v.anio,
@@ -115,16 +138,25 @@ INNER JOIN empleado em ON em.id_empleado = v.id_empleado
 GROUP BY t.id_tienda, t.nombre, v.anio, em.id_empleado, em.nombre
 ORDER BY t.id_tienda, v.anio, SUM(p.precio) DESC, em.nombre;
 
--- Query 9, El empleado con mayor sueldo por mes.
+--Query 8; El vendedor con más productos vendidos por tienda.
+SELECT DISTINCT ON (t.id_tienda)
+    t.nombre AS tienda,
+    e.nombre AS vendedor,
+    COUNT(pv.id_producto) AS total_productos
+FROM venta v
+JOIN producto_venta pv ON v.id_venta = pv.id_venta
+JOIN tienda t ON v.id_tienda = t.id_tienda
+JOIN empleado e ON v.id_empleado = e.id_empleado
+GROUP BY t.id_tienda, t.nombre, e.id_empleado, e.nombre
+ORDER BY t.id_tienda, total_productos DESC;
 
+-- Query 9; El empleado con mayor sueldo por mes.
 SELECT nombre, mes, valor FROM empleado as e
 	INNER JOIN sueldo as s ON s.id_empleado = e.id_empleado
-	ORDER BY s.valor DESC LIMIT 1
+	ORDER BY s.valor DESC LIMIT 1;
 
-
---Query 10, La tienda con menor recaudación por mes.
+--Query 10; La tienda con menor recaudación por mes.
 --SEPARADO POR AÑO Y MES.
-
 SELECT anio, mes, nombre_tienda, recaudacion
 FROM (
 	SELECT V.mes, V.anio, T.id_tienda, T.nombre AS nombre_tienda,
@@ -153,8 +185,7 @@ ORDER BY anio,
 	WHEN 'diciembre' THEN 12
 END;
 
-
---Query 10, La tienda con menor recaudación por mes.
+--Query 10; La tienda con menor recaudación por mes.
 --SEPARADO SOLO POR MES.
 SELECT mes, nombre_tienda, recaudacion
 FROM (
