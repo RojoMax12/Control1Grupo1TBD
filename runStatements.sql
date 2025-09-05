@@ -38,6 +38,27 @@ INNER JOIN producto_venta pv ON pv.id_venta = v.id_venta
 INNER JOIN producto p ON p.id_producto = pv.id_producto
 ORDER BY t.id_tienda, p.precio ASC;
 
+--Query 4, Empleado que ganó más por tienda en 2020, indicando la comuna donde vive y el cargo que tiene en la empresa.
+
+SELECT 
+    e.id_empleado,
+    e.nombre AS empleado,
+    e.cargo,
+    c.nombre AS comuna,
+    COUNT(DISTINCT v.id_venta) AS total_ventas,
+    SUM(p.precio) AS recaudacion,
+    v.anio
+FROM empleado e
+JOIN comuna c ON e.id_comuna = c.id_comuna
+JOIN tienda_empleado te ON e.id_empleado = te.id_empleado
+JOIN tienda t ON te.id_tienda = t.id_tienda
+JOIN venta v ON t.id_tienda = v.id_tienda AND e.id_empleado = v.id_empleado
+JOIN producto_venta pv ON pv.id_venta = v.id_venta
+JOIN producto p ON p.id_producto = pv.id_producto
+WHERE v.anio = 2020
+GROUP BY e.id_empleado, e.nombre, e.cargo, c.nombre, v.anio
+ORDER BY total_ventas DESC, recaudacion DESC
+LIMIT 1;
 
 --Query 5, La tienda que tiene menos empleados.
 SELECT nombre, cant_empleados
@@ -65,6 +86,12 @@ INNER JOIN producto p ON p.id_producto = pv.id_producto
 INNER JOIN empleado em ON em.id_empleado = v.id_empleado
 GROUP BY t.id_tienda, t.nombre, v.anio, em.id_empleado, em.nombre
 ORDER BY t.id_tienda, v.anio, SUM(p.precio) DESC, em.nombre;
+
+-- Query 9, El empleado con mayor sueldo por mes.
+
+SELECT nombre, mes, valor FROM empleado as e
+	INNER JOIN sueldo as s ON s.id_empleado = e.id_empleado
+	ORDER BY s.valor DESC LIMIT 1
 
 
 --Query 10, La tienda con menor recaudación por mes.
