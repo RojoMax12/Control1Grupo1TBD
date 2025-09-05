@@ -1,9 +1,9 @@
 -- Crear base de datos (ejecutar en postgres)
---DROP DATABASE IF EXISTS tienda_comercial;
---CREATE DATABASE tienda_comercial;
+DROP DATABASE IF EXISTS tienda_comercial;
+CREATE DATABASE tienda_comercial;
 
 -- Conectarse a la base
---\c tienda_comercial;
+\c tienda_comercial;
 
 -- ===========================
 -- CREACIÓN DE TABLAS

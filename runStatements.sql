@@ -73,6 +73,34 @@ FROM (
 WHERE rnk = 1;
 
 
+-- Query 6: Obtener el vendedor con más ventas por mes
+
+WITH ranking AS ( /*crea columna rn con el ranking de vendedores por mes y año*/
+    SELECT 
+        v.anio,
+        v.mes,
+        e.nombre AS vendedor,
+        COUNT(v.id_venta) AS total_ventas,
+        ROW_NUMBER() OVER 
+		(PARTITION BY v.anio, v.mes 
+		ORDER BY COUNT(v.id_venta) DESC) AS rn
+		
+    FROM venta v
+    JOIN tienda_empleado te ON v.id_tienda = te.id_tienda
+    JOIN empleado e ON te.id_empleado = e.id_empleado
+    GROUP BY v.anio, v.mes, e.nombre
+)
+SELECT anio, mes, vendedor, total_ventas
+FROM ranking
+WHERE rn = 1
+ORDER BY anio, 
+	array_position(
+ 		ARRAY['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+              'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'], 
+        mes
+	);
+
+
 -- Query 7, El vendedor que ha recaudado más dinero para la tienda por año.
 SELECT DISTINCT ON (t.id_tienda, v.anio)
 		t.nombre AS tienda,
