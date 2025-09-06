@@ -1,29 +1,43 @@
 --Query 1; Producto más vendido por mes el 2021.
-WITH ventas_por_producto AS ( /*tabla temporal ventas_por_producto */
-	SELECT v.mes, 
-		p.nombre AS producto,
-		COUNT(*) AS total_vendido
-	FROM venta v
-	JOIN producto_venta pv ON v.id_venta = pv.id_venta /*obtener productos asociados a cada venta*/
-	JOIN producto p ON pv.id_producto = p.id_producto /*obtener el nombre del producto*/
-	WHERE v.anio = 2021 /*filtrar ventas del año 2021*/
-	GROUP BY v.mes, p.nombre
-	
+WITH ventas_por_producto AS ( --tabla temporal ventas_por_producto en 2021
+    SELECT 
+        v.mes, 
+        p.nombre AS producto,
+        COUNT(*) AS total_vendido
+    FROM venta v
+    JOIN producto_venta pv ON v.id_venta = pv.id_venta --obtener productos asociados a cada venta
+    JOIN producto p ON pv.id_producto = p.id_producto --obtener el nombre del producto
+    WHERE v.anio = 2021 --filtrar ventas del año 2021
+    GROUP BY v.mes, p.nombre
 )
-SELECT mes, producto, total_vendido
+SELECT mes, producto, total_vendido 
 FROM (
     SELECT 
         mes,
         producto,
         total_vendido,
-        RANK() OVER (PARTITION BY mes ORDER BY total_vendido DESC) AS ranking
+		--asigna un número a cada producto en cada mes, ordenando descendente la cantidad de ventas. 
+		--Luego filtra para quedarse los productos más vendidos por mes.
+        RANK() OVER (PARTITION BY mes ORDER BY total_vendido DESC) AS ranking 
     FROM ventas_por_producto
 ) AS ranked
 WHERE ranking = 1
-ORDER BY array_position(
-	ARRAY['Enero','Febrero','Marzo', 'Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
-	mes
-);
+ORDER BY 
+    CASE mes
+        WHEN 'Enero' THEN 1
+        WHEN 'Febrero' THEN 2
+        WHEN 'Marzo' THEN 3
+        WHEN 'Abril' THEN 4
+        WHEN 'Mayo' THEN 5
+        WHEN 'Junio' THEN 6
+        WHEN 'Julio' THEN 7
+        WHEN 'Agosto' THEN 8
+        WHEN 'Septiembre' THEN 9
+        WHEN 'Octubre' THEN 10
+        WHEN 'Noviembre' THEN 11
+        WHEN 'Diciembre' THEN 12
+    END;
+
 
 -- Query 2; Producto mas economico por tienda.
 SELECT DISTINCT ON (t.id_tienda) 
@@ -95,34 +109,51 @@ FROM (
 ) AS X
 WHERE rnk = 1;
 
-
 -- Query 6; Obtener el vendedor con más ventas por mes
-
-WITH ranking AS ( /*crea columna rn con el ranking de vendedores por mes y año*/
+WITH ventas_por_empleado AS (--Tabla temporal que calcula el total de ventas de los empleados por mes y año
     SELECT 
-        v.anio,
-        v.mes,
-        e.nombre AS vendedor,
-        COUNT(v.id_venta) AS total_ventas,
-        ROW_NUMBER() OVER 
-		(PARTITION BY v.anio, v.mes 
-		ORDER BY COUNT(v.id_venta) DESC) AS rn
-		
-    FROM venta v
-    JOIN tienda_empleado te ON v.id_tienda = te.id_tienda
-    JOIN empleado e ON te.id_empleado = e.id_empleado
-    GROUP BY v.anio, v.mes, e.nombre
+        anio,
+        mes,
+        id_empleado,
+        COUNT(*) AS total_ventas_mes 
+    FROM venta
+    GROUP BY anio, mes, id_empleado
+),
+ranking AS (--Tabla temporal que rankea a los empleados por mes y año segun sus ventas
+    SELECT
+        ve.anio,
+        ve.mes,
+        ve.id_empleado,
+        ve.total_ventas_mes,
+		-- asigna un número a cada vendedor en cada mes y año, ordenando descendente según la cantidad de ventas
+        -- luego se filtra para quedarse con el vendedor que más ventas realizó en cada mes
+        RANK() OVER (PARTITION BY ve.anio, ve.mes ORDER BY ve.total_ventas_mes DESC) AS ranking
+    FROM ventas_por_empleado ve
 )
-SELECT anio, mes, vendedor, total_ventas
-FROM ranking
-WHERE rn = 1
-ORDER BY anio, 
-	array_position(
- 		ARRAY['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-              'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'], 
-        mes
-	);
-
+SELECT 
+    r.anio,
+    e.nombre AS vendedor,
+    r.mes,
+    r.total_ventas_mes
+FROM ranking r
+JOIN empleado e ON r.id_empleado = e.id_empleado
+WHERE r.ranking = 1
+ORDER BY 
+    r.anio,
+    CASE r.mes
+        WHEN 'Enero' THEN 1
+        WHEN 'Febrero' THEN 2
+        WHEN 'Marzo' THEN 3
+        WHEN 'Abril' THEN 4
+        WHEN 'Mayo' THEN 5
+        WHEN 'Junio' THEN 6
+        WHEN 'Julio' THEN 7
+        WHEN 'Agosto' THEN 8
+        WHEN 'Septiembre' THEN 9
+        WHEN 'Octubre' THEN 10
+        WHEN 'Noviembre' THEN 11
+        WHEN 'Diciembre' THEN 12
+    END;
 
 -- Query 7; El vendedor que ha recaudado más dinero para la tienda por año.
 SELECT DISTINCT ON (t.id_tienda, v.anio)
